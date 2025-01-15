@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Mapa Slovenska</title>
-   <link rel="icon" type="image/png" href="favicon.png">
-
+    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         body {
             display: flex;
@@ -83,6 +82,22 @@
             }
         }
     </style>
+    <script>
+        // Geoblokácia pre Českú republiku
+        async function checkGeolocation() {
+            try {
+                const response = await fetch('https://ipinfo.io?token=a28f41ae11d8f3'); // Nahraďte YOUR_API_TOKEN svojím tokenom z ipinfo.io
+                const data = await response.json();
+                if (data.country === 'CZ') {
+                    document.body.innerHTML = '<h1>Prístup zamietnutý</h1><p>Táto stránka nie je dostupná vo vašej krajine.</p>';
+                }
+            } catch (error) {
+                console.error('Chyba pri získavaní geolokácie:', error);
+            }
+        }
+
+        window.onload = checkGeolocation;
+    </script>
 </head>
 <body>
     <div class="container">
