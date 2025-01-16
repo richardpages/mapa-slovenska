@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Server</title>
+    <title>Proxy Server - Prehrávanie stránok</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,25 +23,25 @@
 </head>
 <body>
     <h1>Proxy Server</h1>
-    <p>Zadajte URL stránky, ktorú chcete zobraziť cez proxy:</p>
+    <p>Zadajte URL, ktoré chcete načítať cez proxy server:</p>
     <input type="text" id="urlInput" placeholder="Zadajte URL" size="50">
-    <button onclick="fetchProxy()">Načítať stránku</button>
+    <button onclick="loadPage()">Načítať stránku</button>
     
     <iframe id="proxyIframe"></iframe>
 
     <script>
-        function fetchProxy() {
+        function loadPage() {
             const inputUrl = document.getElementById('urlInput').value;
 
             if (inputUrl) {
-                const proxyUrl = `https://thingproxy.freeboard.io/fetch/${inputUrl}`;
+                const proxyUrl = `https://proxy.cors.sh/${inputUrl}`;
 
                 fetch(proxyUrl)
                     .then(response => response.text())
                     .then(data => {
                         document.getElementById('proxyIframe').srcdoc = data;
                     })
-                    .catch(err => alert("Chyba pri načítaní: " + err));
+                    .catch(err => alert("Chyba: " + err));
             } else {
                 alert('Prosím, zadajte platnú URL adresu.');
             }
