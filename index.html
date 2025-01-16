@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Server - Prehrávanie stránok</title>
+    <title>Proxy Server</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,7 +23,7 @@
 </head>
 <body>
     <h1>Proxy Server</h1>
-    <p>Zadajte URL, ktoré chcete načítať cez proxy server:</p>
+    <p>Zadajte URL stránky, ktorú chcete načítať cez proxy:</p>
     <input type="text" id="urlInput" placeholder="Zadajte URL" size="50">
     <button onclick="loadPage()">Načítať stránku</button>
     
@@ -31,19 +31,22 @@
 
     <script>
         function loadPage() {
-            const inputUrl = document.getElementById('urlInput').value;
+            const url = document.getElementById('urlInput').value.trim();
 
-            if (inputUrl) {
-                const proxyUrl = `https://proxy.cors.sh/${inputUrl}`;
-
+            if (url) {
+                const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+                
                 fetch(proxyUrl)
                     .then(response => response.text())
                     .then(data => {
-                        document.getElementById('proxyIframe').srcdoc = data;
+                        const iframe = document.getElementById('proxyIframe');
+                        iframe.srcdoc = data; // Načítanie obsahu stránky do iframe
                     })
-                    .catch(err => alert("Chyba: " + err));
+                    .catch(err => {
+                        alert("Chyba pri načítaní stránky: " + err.message);
+                    });
             } else {
-                alert('Prosím, zadajte platnú URL adresu.');
+                alert('Zadajte platnú URL!');
             }
         }
     </script>
