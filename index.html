@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fungujúci Proxy Server</title>
+    <title>Verejný Proxy Server</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,25 +25,30 @@
     <h1>Proxy Server</h1>
     <p>Zadajte URL stránky, ktorú chcete načítať cez proxy:</p>
     <input type="text" id="urlInput" placeholder="Zadajte URL stránky" size="50">
-    <button onclick="loadProxy()">Načítať stránku</button>
+    <button onclick="loadPage()">Načítať stránku</button>
     
     <iframe id="proxyIframe"></iframe>
 
     <script>
-        function loadProxy() {
+        function loadPage() {
             const url = document.getElementById('urlInput').value.trim();
 
             if (url) {
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                const proxyUrl = `https://proxy.cors.sh/${encodeURIComponent(url)}`;
                 
-                fetch(proxyUrl)
-                    .then(response => response.text())
-                    .then(data => {
-                        document.getElementById('proxyIframe').srcdoc = data;
-                    })
-                    .catch(err => {
-                        alert("Chyba pri načítaní stránky: " + err.message);
-                    });
+                fetch(proxyUrl, {
+                    headers: {
+                        'x-cors-api-key': 'test' // Verejný kľúč, ak proxy vyžaduje overenie
+                    }
+                })
+                .then(response => response.text())
+                .then(data => {
+                    const iframe = document.getElementById('proxyIframe');
+                    iframe.srcdoc = data;
+                })
+                .catch(err => {
+                    alert("Chyba pri načítaní stránky: " + err.message);
+                });
             } else {
                 alert("Prosím, zadajte platnú URL.");
             }
