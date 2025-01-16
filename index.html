@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Numerický model počasia</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +17,7 @@
             height: 100vh;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             text-align: center;
             padding: 20px;
             background: white;
@@ -39,6 +40,12 @@
         button:hover {
             background: #0056b3;
         }
+        #map {
+            height: 400px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
         #weather-data {
             margin-top: 20px;
             text-align: left;
@@ -56,12 +63,28 @@
         <h1>Numerický model počasia</h1>
         <p>Vizualizácia dát z numerického modelu ICON-EU.</p>
         <button onclick="loadWeatherData()">Načítať dáta</button>
+        <div id="map"></div>
         <div id="weather-data">Tu sa zobrazia dáta...</div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
+        // Initialize the map
+        var map = L.map('map').setView([48.15, 17.11], 10);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; prispievatelia OpenStreetMap'
+        }).addTo(map);
+
+        // Add a marker for Bratislava
+        var marker = L.marker([48.15, 17.11]).addTo(map)
+            .bindPopup('Bratislava')
+            .openPopup();
+
+        // Function to load weather data
         async function loadWeatherData() {
-            const apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=48.15&longitude=17.11&hourly=temperature_2m"; // Príkladná URL k modelovým dátam
+            const apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=48.15&longitude=17.11&hourly=temperature_2m";
 
             try {
                 const response = await fetch(apiUrl);
@@ -69,9 +92,8 @@
                     throw new Error(`Chyba: ${response.status}`);
                 }
 
-                const data = await response.text(); // Pri reálnych dátach použijete JSON alebo iný formát
-
-                document.getElementById("weather-data").textContent = data;
+                const data = await response.json();
+                document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
             } catch (error) {
                 document.getElementById("weather-data").textContent = `Nepodarilo sa načítať dáta: ${error.message}`;
             }
