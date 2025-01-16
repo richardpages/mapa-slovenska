@@ -42,7 +42,7 @@
                 var apiKey = "5kRUsjZ8hpEFFFem6xmfnP7qA3FXLChwndi2ZP2Z3zwz";
                 
                 // Použijeme proxifly.dev API na načítanie stránky cez proxy s pridaním API kľúča
-                var proxyUrl = `https://api.proxifly.dev/?url=${encodeURIComponent(url)}&api_key=${apiKey}`;
+                var proxyUrl = `https://api.proxifly.dev/proxy?url=${encodeURIComponent(url)}&api_key=${apiKey}`;
 
                 // Zobrazenie stránky cez proxy server do iframe
                 var iframe = document.getElementById("proxyIframe");
