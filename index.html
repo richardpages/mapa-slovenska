@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Numerický model počasia</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script> <!-- Načítanie knižnice leaflet-heat -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,15 +70,15 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // Initialize the map
+        // Inicializácia mapy
         var map = L.map('map').setView([48.15, 17.11], 10);
 
-        // Add OpenStreetMap tiles
+        // Pridanie OpenStreetMap dlaždíc
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; prispievatelia OpenStreetMap'
         }).addTo(map);
 
-        // Function to load weather data
+        // Funkcia na načítanie dát o počasí
         async function loadWeatherData() {
             const apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=48.15&longitude=17.11&hourly=temperature_2m";
 
@@ -95,25 +95,26 @@
             }
         }
 
-        // Function to display temperature heatmap on the map
+        // Funkcia na zobrazenie teplotnej mapy
         function displayTemperatureHeatmap(data) {
             const temperatureData = data.hourly.temperature_2m;
             const timestamps = data.hourly.time;
 
             let heatData = [];
 
+            // Generovanie teplotnej mapy
             for (let i = 0; i < temperatureData.length; i++) {
-                // Môžete pridať ďalšie súradnice na zobrazenie teploty v rôznych oblastiach
-                let lat = 48.15 + Math.random() * 0.5 - 0.25;  // Simulácia rôznych miest
+                // Simulácia rôznych súradníc v okolí Bratislavy
+                let lat = 48.15 + Math.random() * 0.5 - 0.25;
                 let lon = 17.11 + Math.random() * 0.5 - 0.25;
                 let temp = temperatureData[i];
                 heatData.push([lat, lon, temp]);
             }
 
-            // Add the heatmap layer to the map
+            // Pridanie heatmap vrstvy na mapu
             L.heatLayer(heatData, {radius: 25, blur: 15}).addTo(map);
 
-            // Display raw data in the weather-data div
+            // Zobrazenie údajov o počasí
             document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
         }
     </script>
