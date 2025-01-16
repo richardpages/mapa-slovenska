@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Server - Nové API</title>
+    <title>Proxy Server</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,39 +22,46 @@
     </style>
 </head>
 <body>
-    <h1>Proxy Server s novým API</h1>
-    <p>Zadajte URL stránku, ktorú chcete načítať cez proxy server:</p>
-    <input type="text" id="urlInput" placeholder="Zadajte URL stránky" size="50">
-    <button onclick="loadPage()">Načítať stránku</button>
+    <h1>Proxy Server</h1>
+    <p>Zadajte URL, ktoré chcete prehrať cez proxy server (pre obídenie geoblokácie):</p>
+    <input type="text" id="urlInput" placeholder="Zadajte URL" size="50">
+    <button onclick="fetchProxyContent()">Prehrať stránku</button>
     
     <iframe id="proxyIframe"></iframe>
 
     <script>
-        function loadPage() {
-            const url = document.getElementById('urlInput').value.trim();
-
+        function fetchProxyContent() {
+            var url = document.getElementById("urlInput").value;
+            
             if (url) {
-                // Vytvoríme nový proxy URL
-                const proxyUrl = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`;
-                
-                // Načítanie obsahu zo služby proxy
-                fetch(proxyUrl)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Chyba pri načítaní stránky.");
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        // Načítanie stránky do iframe
-                        const iframe = document.getElementById('proxyIframe');
-                        iframe.srcdoc = data;
-                    })
-                    .catch(err => {
-                        alert("Nastala chyba pri načítaní stránky: " + err.message);
-                    });
+                var proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+
+                // Fetch content from proxy API
+                fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        // Simulácia hlavičiek bežného prehliadača, aby sme znížili detekciu proxy
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Accept-Language': 'en-US,en;q=0.9',
+                        'Connection': 'keep-alive'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Get the content from the API response
+                    var pageContent = data.contents;
+                    var iframe = document.getElementById("proxyIframe");
+
+                    // Inject content into the iframe
+                    iframe.srcdoc = pageContent;
+                })
+                .catch(error => {
+                    alert("Nastala chyba pri načítaní stránky: " + error);
+                });
             } else {
-                alert("Prosím, zadajte platnú URL.");
+                alert("Zadajte platnú URL!");
             }
         }
     </script>
