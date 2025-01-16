@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Server</title>
+    <title>Proxy Server - Prehrávanie videí</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,10 +22,10 @@
     </style>
 </head>
 <body>
-    <h1>Proxy Server</h1>
-    <p>Zadajte URL, ktoré chcete prehrať cez proxy server (pre obídenie geoblokácie):</p>
-    <input type="text" id="urlInput" placeholder="Zadajte URL" size="50">
-    <button onclick="fetchProxyContent()">Prehrať stránku</button>
+    <h1>Proxy Server - Prehrávanie videí</h1>
+    <p>Zadajte URL videa, ktoré chcete prehrať cez proxy server (pre obídenie geoblokácie):</p>
+    <input type="text" id="urlInput" placeholder="Zadajte URL videa" size="50">
+    <button onclick="fetchProxyContent()">Prehrať video</button>
     
     <iframe id="proxyIframe"></iframe>
 
@@ -34,18 +34,15 @@
             var url = document.getElementById("urlInput").value;
             
             if (url) {
-                var proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+                // Používame CORS Anywhere API na obídenie CORS
+                var proxyUrl = "https://cors-anywhere.herokuapp.com/" + url;
 
                 // Fetch content from proxy API
                 fetch(proxyUrl)
-                    .then(response => response.json())
+                    .then(response => response.text())
                     .then(data => {
-                        // Get the content from the API response
-                        var pageContent = data.contents;
                         var iframe = document.getElementById("proxyIframe");
-
-                        // Inject content into the iframe
-                        iframe.srcdoc = pageContent;
+                        iframe.srcdoc = data;  // Inject HTML content into iframe
                     })
                     .catch(error => {
                         alert("Nastala chyba pri načítaní stránky: " + error);
