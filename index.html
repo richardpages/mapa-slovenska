@@ -1,60 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="sk">
 <head>
-  <meta charset="utf-8">
-  <title>Teplotná animácia</title>
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-heat/0.2.0/leaflet-heat.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <style>
-    #map {
-      height: 100vh;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-  <div id="map"></div>
-
-  <script>
-    // Inicializácia mapy
-    var map = L.map('map').setView([49.5, 19.5], 6);  // Nastavte stred mapy podľa potreby
-
-    // Pridanie základnej vrstvy mapy
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    // Teplotné údaje a časy (pre príklad používam iba čas a teploty z tvojej požiadavky)
-    var times = [
-      "2025-01-19T21:00", "2025-01-19T22:00", "2025-01-19T23:00", "2025-01-20T00:00", 
-      "2025-01-20T01:00", "2025-01-20T02:00", "2025-01-20T03:00", "2025-01-20T04:00"
-    ];
+    <h1>Proxy Server</h1>
+    <p>Zadajte URL, ktoré chcete prehrať cez proxy server (pre obídenie geoblokácie):</p>
+    <input type="text" id="urlInput" placeholder="Zadajte URL" size="50">
+    <button onclick="fetchProxyContent()">Prehrať stránku</button>
     
-    var temperatures = [
-      1.9, 1.1, 0.5, 0.3, 0.5, 0.2, 0.3, -0.1
-    ];
+    <iframe id="proxyIframe"></iframe>
 
-    var heatMapData = [];
-    
-    // Pridanie teplotných bodov na mapu
-    function generateHeatData() {
-      heatMapData = [];
-      for (var i = 0; i < temperatures.length; i++) {
-        // Príklad teploty v určitej geografickej polohe (možno zmeniť podľa údajov)
-        heatMapData.push([49.5 + (Math.random() * 0.2 - 0.1), 19.5 + (Math.random() * 0.2 - 0.1), temperatures[i]]);
-      }
-    }
+    <script>
+        function fetchProxyContent() {
+            var url = document.getElementById("urlInput").value;
+            
+            if (url) {
+                var proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
 
-    // Inicializácia animácie
-    function updateHeatMapLayer() {
-      generateHeatData();  // Generovanie nových dát pre každý časový okamih
-      var heatLayer = L.heatLayer(heatMapData, {radius: 25}).addTo(map);
-      setTimeout(function() {
-        map.removeLayer(heatLayer);  // Odstráni predchádzajúci layer
-        updateHeatMapLayer();  // Aktualizuje layer v ďalšom časovom kroku
-      }, 1000);  // 1000ms pre každý časový krok
-    }
+                // Fetch content from proxy API
+                fetch(proxyUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Get the content from the API response
+                        var pageContent = data.contents;
+                        var iframe = document.getElementById("proxyIframe");
 
-    // Na začiatku začni animáciu
-    updateHeatMapLayer();
-  </script>
+                        // Inject content into the iframe
+                        iframe.srcdoc = pageContent;
+                    })
+                    .catch(error => {
+                        alert("Nastala chyba pri načítaní stránky: " + error);
+                    });
+            } else {
+                alert("Zadajte platnú URL!");
+            }
+        }
+    </script>
 </body>
 </html>
