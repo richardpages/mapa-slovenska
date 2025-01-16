@@ -32,8 +32,8 @@
             var url = document.getElementById("urlInput").value;
             
             if (url) {
-                // Používame CORS Anywhere API na obídenie CORS
-                var proxyUrl = "https://cors-anywhere.herokuapp.com/" + url;
+                // Nahraďte 'YOUR_API_KEY' skutočným API kľúčom zo ScrapingBee
+                var proxyUrl = "https://app.scrapingbee.com/api/?api_key=YOUR_API_KEY&url=" + encodeURIComponent(url);
 
                 fetch(proxyUrl)
                     .then(response => response.text())
