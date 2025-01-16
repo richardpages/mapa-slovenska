@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Server - Prehrávanie videí</title>
+    <title>Proxy Server</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,38 +14,36 @@
             margin: 10px 0;
             font-size: 16px;
         }
-        #content {
-            margin-top: 20px;
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <h1>Proxy Server cez API URL</h1>
-    <p>Zadajte URL videa, ktoré chcete prehrať cez proxy server (pre obídenie geoblokácie):</p>
-    <input type="text" id="urlInput" placeholder="Zadajte URL videa" size="50">
-    <button onclick="fetchProxyContent()">Prehrať video</button>
+    <h1>Proxy Server</h1>
+    <p>Zadajte URL stránky, ktorú chcete zobraziť cez proxy:</p>
+    <input type="text" id="urlInput" placeholder="Zadajte URL" size="50">
+    <button onclick="fetchProxy()">Načítať stránku</button>
     
-    <div id="content"></div>
+    <iframe id="proxyIframe"></iframe>
 
     <script>
-        function fetchProxyContent() {
-            var url = document.getElementById("urlInput").value;
-            
-            if (url) {
-                // Nahraďte 'YOUR_API_KEY' skutočným API kľúčom zo ScrapingBee
-                var proxyUrl = "https://app.scrapingbee.com/api/?api_key=YOUR_API_KEY&url=" + encodeURIComponent(url);
+        function fetchProxy() {
+            const inputUrl = document.getElementById('urlInput').value;
+
+            if (inputUrl) {
+                const proxyUrl = `https://thingproxy.freeboard.io/fetch/${inputUrl}`;
 
                 fetch(proxyUrl)
                     .then(response => response.text())
                     .then(data => {
-                        var contentDiv = document.getElementById("content");
-                        contentDiv.innerHTML = data;  // Inject HTML content into div
+                        document.getElementById('proxyIframe').srcdoc = data;
                     })
-                    .catch(error => {
-                        alert("Nastala chyba pri načítaní stránky: " + error);
-                    });
+                    .catch(err => alert("Chyba pri načítaní: " + err));
             } else {
-                alert("Zadajte platnú URL!");
+                alert('Prosím, zadajte platnú URL adresu.');
             }
         }
     </script>
