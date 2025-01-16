@@ -61,7 +61,7 @@
 
     <script>
         async function loadWeatherData() {
-            const apiUrl = "https://opendata.dwd.de/weather/nwp/icon-eu/grib/"; // Príkladná URL k modelovým dátam
+            const apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=48.15&longitude=17.11&hourly=temperature_2m"; // Príkladná URL k modelovým dátam
 
             try {
                 const response = await fetch(apiUrl);
