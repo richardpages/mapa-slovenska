@@ -1,61 +1,60 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animácia teplôt na mape</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <meta charset="utf-8">
+  <title>Teplotná animácia</title>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap@0.2.0/leaflet-heat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-heat/0.2.0/leaflet-heat.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+    }
+  </style>
 </head>
-<body style="margin: 0; height: 100vh;">
-  <div id="map" style="width: 100%; height: 100%;"></div>
+<body>
+  <div id="map"></div>
 
   <script>
-    // Nastavenie mapy
-    var map = L.map('map').setView([48.0, 19.0], 6); // Stred Slovenska
+    // Inicializácia mapy
+    var map = L.map('map').setView([49.5, 19.5], 6);  // Nastavte stred mapy podľa potreby
 
-    // Pridanie základnej vrstvy mapy (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    // Pridanie základnej vrstvy mapy
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // Príklad teplotných dát (časové body a teploty)
+    // Teplotné údaje a časy (pre príklad používam iba čas a teploty z tvojej požiadavky)
     var times = [
-      "2025-01-19T21:00", "2025-01-19T22:00", "2025-01-19T23:00", "2025-01-20T00:00",
+      "2025-01-19T21:00", "2025-01-19T22:00", "2025-01-19T23:00", "2025-01-20T00:00", 
       "2025-01-20T01:00", "2025-01-20T02:00", "2025-01-20T03:00", "2025-01-20T04:00"
     ];
+    
     var temperatures = [
       1.9, 1.1, 0.5, 0.3, 0.5, 0.2, 0.3, -0.1
     ];
-    var locations = [
-      [48.1, 19.3], [48.3, 19.5], [48.4, 19.6], [48.5, 19.7], 
-      [48.6, 19.8], [48.7, 19.9], [48.8, 20.0], [48.9, 20.1]
-    ];
 
-    // Príprava heatmapy
-    var heatData = [];
-    for (var i = 0; i < times.length; i++) {
-      for (var j = 0; j < locations.length; j++) {
-        heatData.push([locations[j][0], locations[j][1], temperatures[i]]);
+    var heatMapData = [];
+    
+    // Pridanie teplotných bodov na mapu
+    function generateHeatData() {
+      heatMapData = [];
+      for (var i = 0; i < temperatures.length; i++) {
+        // Príklad teploty v určitej geografickej polohe (možno zmeniť podľa údajov)
+        heatMapData.push([49.5 + (Math.random() * 0.2 - 0.1), 19.5 + (Math.random() * 0.2 - 0.1), temperatures[i]]);
       }
     }
 
-    // Pridanie heatmapy na mapu
-    var heat = L.heatLayer(heatData, {
-      radius: 25,
-      blur: 15,
-      maxZoom: 17
-    }).addTo(map);
-
-    // Animácia cez čas
-    let currentIndex = 0;
-    function animateHeatmap() {
-      currentIndex = (currentIndex + 1) % times.length;
-      heat.setLatLngs(heatData.filter((_, index) => index % times.length === currentIndex));
-      setTimeout(animateHeatmap, 1000); // 1 sekunda na každú zmenu
+    // Inicializácia animácie
+    function updateHeatMapLayer() {
+      generateHeatData();  // Generovanie nových dát pre každý časový okamih
+      var heatLayer = L.heatLayer(heatMapData, {radius: 25}).addTo(map);
+      setTimeout(function() {
+        map.removeLayer(heatLayer);  // Odstráni predchádzajúci layer
+        updateHeatMapLayer();  // Aktualizuje layer v ďalšom časovom kroku
+      }, 1000);  // 1000ms pre každý časový krok
     }
-    animateHeatmap(); // Spustenie animácie
+
+    // Na začiatku začni animáciu
+    updateHeatMapLayer();
   </script>
 </body>
 </html>
