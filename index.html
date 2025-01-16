@@ -98,6 +98,29 @@
                 document.getElementById("weather-data").textContent = `Nepodarilo sa načítať dáta: ${error.message}`;
             }
         }
+
+        // Add click event to map to add marker and fetch weather data
+        map.on('click', async function(e) {
+            var lat = e.latlng.lat;
+            var lon = e.latlng.lng;
+            var userMarker = L.marker([lat, lon]).addTo(map)
+                .bindPopup(`Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`)
+                .openPopup();
+
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`Chyba: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById("weather-data").textContent = `Nepodarilo sa načítať dáta: ${error.message}`;
+            }
+        });
     </script>
 </body>
 </html>
