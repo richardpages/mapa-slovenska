@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Numerický model počasia</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -77,11 +78,6 @@
             attribution: '&copy; prispievatelia OpenStreetMap'
         }).addTo(map);
 
-        // Add a marker for Bratislava
-        var marker = L.marker([48.15, 17.11]).addTo(map)
-            .bindPopup('Bratislava')
-            .openPopup();
-
         // Function to load weather data
         async function loadWeatherData() {
             const apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=48.15&longitude=17.11&hourly=temperature_2m";
@@ -93,34 +89,33 @@
                 }
 
                 const data = await response.json();
-                document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
+                displayTemperatureHeatmap(data);
             } catch (error) {
                 document.getElementById("weather-data").textContent = `Nepodarilo sa načítať dáta: ${error.message}`;
             }
         }
 
-        // Add click event to map to add marker and fetch weather data
-        map.on('click', async function(e) {
-            var lat = e.latlng.lat;
-            var lon = e.latlng.lng;
-            var userMarker = L.marker([lat, lon]).addTo(map)
-                .bindPopup(`Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`)
-                .openPopup();
+        // Function to display temperature heatmap on the map
+        function displayTemperatureHeatmap(data) {
+            const temperatureData = data.hourly.temperature_2m;
+            const timestamps = data.hourly.time;
 
-            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m`;
+            let heatData = [];
 
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`Chyba: ${response.status}`);
-                }
-
-                const data = await response.json();
-                document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById("weather-data").textContent = `Nepodarilo sa načítať dáta: ${error.message}`;
+            for (let i = 0; i < temperatureData.length; i++) {
+                // Môžete pridať ďalšie súradnice na zobrazenie teploty v rôznych oblastiach
+                let lat = 48.15 + Math.random() * 0.5 - 0.25;  // Simulácia rôznych miest
+                let lon = 17.11 + Math.random() * 0.5 - 0.25;
+                let temp = temperatureData[i];
+                heatData.push([lat, lon, temp]);
             }
-        });
+
+            // Add the heatmap layer to the map
+            L.heatLayer(heatData, {radius: 25, blur: 15}).addTo(map);
+
+            // Display raw data in the weather-data div
+            document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
+        }
     </script>
 </body>
 </html>
