@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Server - API URL</title>
+    <title>Proxy Server - Prehrávanie videí</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,14 +33,13 @@
             
             if (url) {
                 // Používame CORS Anywhere API na obídenie CORS
-                var proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
-                
+                var proxyUrl = "https://cors-anywhere.herokuapp.com/" + url;
+
                 fetch(proxyUrl)
-                    .then(response => response.json())
+                    .then(response => response.text())
                     .then(data => {
-                        // Pridáme obsah do divu
                         var contentDiv = document.getElementById("content");
-                        contentDiv.innerHTML = data.contents;  // Inject HTML content into div
+                        contentDiv.innerHTML = data;  // Inject HTML content into div
                     })
                     .catch(error => {
                         alert("Nastala chyba pri načítaní stránky: " + error);
