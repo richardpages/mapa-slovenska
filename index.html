@@ -1,135 +1,92 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numerický model počasia</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            text-align: center;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        h1 {
-            margin-bottom: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        #map {
-            height: 400px;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        #weather-data {
-            margin-top: 20px;
-            text-align: left;
-            font-family: monospace;
-            white-space: pre-wrap;
-            background: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teplota na mape</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-heat@0.2.0/dist/leaflet-heat.js"></script>
+  <style>
+    #map { height: 100vh; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Numerický model počasia</h1>
-        <p>Vizualizácia dát z numerického modelu ICON-EU.</p>
-        <button onclick="loadWeatherData()">Načítať dáta</button>
-        <div id="map"></div>
-        <div id="weather-data">Tu sa zobrazia dáta...</div>
-    </div>
+  <div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-        // Inicializácia mapy
-        var map = L.map('map').setView([48.15, 17.11], 10);
+  <script>
+    // Inicializácia mapy
+    var map = L.map('map').setView([48.1481, 17.1067], 6); // Zamerané na Slovensko
 
-        // Pridanie OpenStreetMap dlaždíc
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; prispievatelia OpenStreetMap'
-        }).addTo(map);
+    // Pridanie dlaždíc mapy
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-        // Funkcia na načítanie dát o počasí
-        async function loadWeatherData() {
-            const apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=48.15&longitude=17.11&hourly=temperature_2m";
+    // Príklad dát - teplota a čas
+    var timeStamps = [
+      "2025-01-19T21:00", "2025-01-19T22:00", "2025-01-19T23:00", "2025-01-20T00:00"
+    ];
 
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`Chyba: ${response.status}`);
-                }
+    var temperatureData = [
+      1.9, 1.1, 0.5, 0.3
+    ];
 
-                const data = await response.json();
-                displayTemperatureMarkers(data);
-            } catch (error) {
-                document.getElementById("weather-data").textContent = `Nepodarilo sa načítať dáta: ${error.message}`;
-            }
+    // Ukážkové súradnice, ktoré reprezentujú rôzne oblasti
+    var locations = [
+      [48.1481, 17.1067], // Bratislava
+      [49.1951, 16.6070], // Brno
+      [50.0755, 14.4378], // Praha
+      [47.4979, 19.0402]  // Budapešť
+    ];
+
+    // Vytvorenie bodov na mape s teplotami
+    var heatMapData = [];
+
+    for (var i = 0; i < locations.length; i++) {
+      heatMapData.push([locations[i][0], locations[i][1], temperatureData[i]]);
+    }
+
+    // Pridanie heatmapy do mapy
+    L.heatLayer(heatMapData, {
+      radius: 25,
+      blur: 15,
+      gradient: {0.4: "blue", 0.6: "lime", 1: "red"}
+    }).addTo(map);
+
+    // Možnosť animácie dát po časových bodoch
+    var currentTimeIndex = 0;
+    setInterval(function() {
+      if (currentTimeIndex < timeStamps.length - 1) {
+        currentTimeIndex++;
+      } else {
+        currentTimeIndex = 0; // Reset na začiatok
+      }
+
+      // Aktualizovanie zobrazených teplôt podľa časového bodu
+      var currentData = [
+        [locations[0][0], locations[0][1], temperatureData[currentTimeIndex]],
+        [locations[1][0], locations[1][1], temperatureData[currentTimeIndex]],
+        [locations[2][0], locations[2][1], temperatureData[currentTimeIndex]],
+        [locations[3][0], locations[3][1], temperatureData[currentTimeIndex]]
+      ];
+
+      // Odstránenie starej heat mapy
+      map.eachLayer(function(layer) {
+        if (layer instanceof L.HeatLayer) {
+          map.removeLayer(layer);
         }
+      });
 
-        // Funkcia na zobrazenie teploty na mape pomocou markerov
-        function displayTemperatureMarkers(data) {
-            const temperatureData = data.hourly.temperature_2m;
-            const timestamps = data.hourly.time;
+      // Opätovné pridanie novej heat mapy s aktualizovanými dátami
+      L.heatLayer(currentData, {
+        radius: 25,
+        blur: 15,
+        gradient: {0.4: "blue", 0.6: "lime", 1: "red"}
+      }).addTo(map);
 
-            // Mapovanie teploty na farbu
-            function temperatureToColor(temp) {
-                if (temp < -10) return '#0000FF'; // Modrá pre veľmi nízke teploty
-                if (temp < 0) return '#00FFFF'; // Svetlo modrá
-                if (temp < 10) return '#FFFF00'; // Žltá
-                if (temp < 20) return '#FF9900'; // Oranžová
-                return '#FF0000'; // Červená pre vysoké teploty
-            }
+    }, 1000); // Každú sekundu sa mení časový bod
 
-            // Pridanie markerov na mapu pre každú hodinu
-            for (let i = 0; i < temperatureData.length; i++) {
-                let lat = 48.15 + Math.random() * 0.5 - 0.25; // Simulovaná šírka
-                let lon = 17.11 + Math.random() * 0.5 - 0.25; // Simulovaná dĺžka
-                let temp = temperatureData[i];
-                let color = temperatureToColor(temp);
-
-                // Vytvorte marker s príslušnou farbou
-                L.circleMarker([lat, lon], {
-                    radius: 8,
-                    fillColor: color,
-                    color: color,
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.7
-                }).addTo(map)
-                .bindPopup(`Čas: ${timestamps[i]}<br>Teplota: ${temp}°C`);
-            }
-
-            // Zobrazenie údajov o počasí
-            document.getElementById("weather-data").textContent = JSON.stringify(data, null, 2);
-        }
-    </script>
+  </script>
 </body>
 </html>
