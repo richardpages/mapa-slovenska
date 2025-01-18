@@ -1,1 +1,35 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geoblokácia Slovensko</title>
+    <style>
+        #greeting {
+            display: none;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: green;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // URL API pre geolokáciu
+            const geoApiUrl = "https://ipapi.co/json/";
+            
+            fetch(geoApiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.country_code === "SK") {
+                        // Zobraziť text, ak je krajina Slovensko
+                        document.getElementById("greeting").style.display = "block";
+                    }
+                })
+                .catch(error => console.error("Chyba pri získavaní geolokácie:", error));
+        });
+    </script>
+</head>
+<body>
+    <div id="greeting">Ahoj</div>
+</body>
+</html>
