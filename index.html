@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geoblokácia Slovensko</title>
     <style>
-        #greeting {
-            display: none;
+        #info {
             font-family: Arial, sans-serif;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        #greeting {
             font-size: 24px;
             color: green;
         }
@@ -22,16 +25,34 @@
                 .then(response => response.json())
                 .then(data => {
                     const jsonData = JSON.parse(data.contents); // Dáta z proxy sú vo formáte string
-                    if (jsonData && jsonData.country_code === "SK") {
-                        // Zobraziť text, ak je krajina Slovensko
-                        document.getElementById("greeting").style.display = "block";
+                    const infoDiv = document.getElementById("info");
+                    const greetingDiv = document.getElementById("greeting");
+
+                    if (jsonData.country_code === "SK") {
+                        // Zobraziť text a info, ak je krajina Slovensko
+                        greetingDiv.style.display = "block";
+                        greetingDiv.textContent = "Ahoj, vitajte zo Slovenska!";
+                    } else {
+                        // Zobraziť info o krajine, ak používateľ nie je na Slovensku
+                        greetingDiv.style.display = "block";
+                        greetingDiv.textContent = `Vitajte z ${jsonData.country}!`;
                     }
+
+                    // Zobraziť podrobné informácie o polohe
+                    infoDiv.innerHTML = `
+                        <strong>Vaša poloha:</strong><br>
+                        Krajina: ${jsonData.country} (${jsonData.country_code})<br>
+                        Mesto: ${jsonData.city}<br>
+                        Región: ${jsonData.region}<br>
+                        IP adresa: ${jsonData.ip}
+                    `;
                 })
                 .catch(error => console.error("Chyba pri získavaní geolokácie:", error));
         });
     </script>
 </head>
 <body>
-    <div id="greeting">Ahoj</div>
+    <div id="greeting" style="display: none;"></div>
+    <div id="info"></div>
 </body>
 </html>
