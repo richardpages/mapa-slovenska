@@ -14,13 +14,15 @@
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // URL verejného API bez potreby kľúča
-            const geoApiUrl = "https://ipwhois.app/json/";
-            
-            fetch(geoApiUrl)
+            // Proxy server pre riešenie CORS problémov
+            const proxyUrl = "https://api.allorigins.win/get?url=";
+            const geoApiUrl = encodeURIComponent("https://ipwhois.app/json/");
+
+            fetch(proxyUrl + geoApiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.country_code === "SK") {
+                    const jsonData = JSON.parse(data.contents); // Dáta z proxy sú vo formáte string
+                    if (jsonData && jsonData.country_code === "SK") {
                         // Zobraziť text, ak je krajina Slovensko
                         document.getElementById("greeting").style.display = "block";
                     }
