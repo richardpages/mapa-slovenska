@@ -1,103 +1,45 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Mapa Slovenska</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-
-    <!-- Bezpečnostné hlavičky -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline';">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Referrer-Policy" content="no-referrer">
-
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #2980b9, #6dd5fa, #ffffff);
-            color: #333;
-            user-select: none;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            gap: 20px;
-            padding-bottom: 60px;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2.5em;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .map {
-            width: 80%;
-            max-width: 1000px;
-            height: auto;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            border: 5px solid #ffffff;
-            transition: transform 0.3s ease;
-        }
-
-        .map:hover {
-            transform: scale(1.05);
-        }
-
-        .footer {
-            width: 100%;
-            text-align: center;
-            padding: 15px 0;
-            background-color: rgba(41, 128, 185, 0.8);
-            color: #ffffff;
-            font-size: 1.1em;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            z-index: 3;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .map {
-                width: 90%;
-                max-width: none;
-                margin-bottom: 10px;
-            }
-
-            .footer {
-                font-size: 1em;
-                padding: 10px 0;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blokovanie iFortuna</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      color: #d93025;
+    }
+    p {
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Mapa Slovenska</h1>
-        <img src="slovensko.png" alt="Mapa Slovenska" class="map" />
-    </div>
+  <h1>Prístup zablokovaný</h1>
+  <p>Stránka <strong>iFortuna</strong> je zablokovaná.</p>
 
-    <div class="footer">
-        Ďakujem za pozretie webu :)
-    </div>
+  <script>
+    // Získaj aktuálnu URL
+    const currentUrl = window.location.href;
+
+    // Zoznam blokovaných domén
+    const blockedDomains = [
+      "https://www.ifortuna.sk/",
+      "http://www.ifortuna.sk/",
+      "https://ifortuna.sk/",
+      "http://ifortuna.sk/"
+    ];
+
+    // Skontroluj, či aktuálna URL je v zozname blokovaných domén
+    if (blockedDomains.includes(currentUrl)) {
+      // Presmeruj používateľa na inú stránku
+      window.location.href = "https://www.google.com"; // Nahraď požadovanou URL
+    }
+  </script>
 </body>
 </html>
